@@ -42,6 +42,9 @@ Parameters:
     Type: Number
     MinValue: 1
     MaxValue: 6
+  Environment:
+    Description: 'The environment to deploy to (e.g. dev, prod, ...)'
+    Type: String
 Conditions:
   IsPublic: !Equals [!Ref Reach, 'public']
   IsPrivate: !Equals [!Ref Reach, 'private']
@@ -50,14 +53,14 @@ Resources:
     Type: 'AWS::EC2::Subnet'
     Properties:
       AvailabilityZone: !Select [!Ref AZIndex, !GetAZs '']
-      CidrBlock: !Select [!Ref SubnetIndex, !Cidr [{'Fn::ImportValue': !Sub '${VpcPlainModule}-CidrBlock'}, !Ref SubnetCount, 12]]
+      CidrBlock: !Select [!Ref SubnetIndex, !Cidr [{'Fn::ImportValue': !Sub '${VpcPlainModule}-CidrBlock'}, !Ref SubnetCount, 5]]
       Ipv6CidrBlock: !Select [!Ref SubnetIndex, !Cidr [{'Fn::ImportValue': !Sub '${VpcPlainModule}-CidrBlockIPv6'}, !Ref SubnetCount, 64]]
       AssignIpv6AddressOnCreation: true
       VpcId:
         'Fn::ImportValue': !Sub '${VpcPlainModule}-Id'
       Tags:
       - Key: Name
-        Value: !Sub '${AZChar} ${Reach}'
+        Value: !Sub 'was-portal-subnet-${AZChar}-${Reach}-${Environment}'
       - Key: Reach
         Value: !Ref Reach
   RouteTable:
